@@ -30,7 +30,7 @@ data "aws_subnets" "default" {
 }
 
 resource "aws_launch_template" "example" {
-  image_id               = "ami-0866a3c8686eaeeba"
+  image_id               = var.ami
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.instance.id]
 
@@ -40,6 +40,7 @@ resource "aws_launch_template" "example" {
         server_port = var.server_port
         db_address  = data.terraform_remote_state.db.outputs.address
         db_port     = data.terraform_remote_state.db.outputs.port
+        server_text = var.server_text
       }
     )
   )
@@ -174,8 +175,8 @@ resource "aws_autoscaling_schedule" "scale_out_during_business_hour" {
 
   scheduled_action_name = "${var.cluster_name}-scale-out-during-business-hours"
   min_size              = 2
-  max_size              = 10
-  desired_capacity      = 10
+  max_size              = 7
+  desired_capacity      = 7
   recurrence            = "0 9 * * *"
 
   autoscaling_group_name = aws_autoscaling_group.example.name
@@ -186,7 +187,7 @@ resource "aws_autoscaling_schedule" "scale_in_at_night" {
 
   scheduled_action_name = "${var.cluster_name}-scale-in-at-night"
   min_size              = 2
-  max_size              = 10
+  max_size              = 7
   desired_capacity      = 2
   recurrence            = "0 17 * * *"
 
