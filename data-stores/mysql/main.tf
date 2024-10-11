@@ -8,8 +8,4 @@ resource "aws_db_instance" "example" {
 
   username = var.db_username
   password = var.db_password
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
