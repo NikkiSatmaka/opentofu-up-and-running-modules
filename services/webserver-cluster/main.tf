@@ -52,8 +52,11 @@ resource "aws_launch_template" "example" {
 }
 
 resource "aws_autoscaling_group" "example" {
+  name = var.cluster_name
+
   launch_template {
-    id = aws_launch_template.example.id
+    id      = aws_launch_template.example.id
+    version = aws_launch_template.example.latest_version
   }
   vpc_zone_identifier = data.aws_subnets.default.ids
 
@@ -62,6 +65,14 @@ resource "aws_autoscaling_group" "example" {
 
   min_size = var.min_size
   max_size = var.max_size
+
+  # Use instance refresh to roll out changes to the ASG
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+    }
+  }
 
   tag {
     key                 = "Name"
